@@ -148,10 +148,8 @@ lemma haha (k: G) : k * k = k -> k = 1 := by
   exact h2
 
 theorem mul_right_inv (a : G) : a * a⁻¹ = 1 := by
-  have h: (a*a⁻¹)*(a*a⁻¹)=a*a⁻¹ := by
-    rw [← mul_assoc, mul_assoc a a⁻¹ a, mul_left_inv, mul_assoc, one_mul]
-  apply haha at h
-  exact h
+  apply haha
+  rw [← mul_assoc, mul_assoc a, mul_left_inv, mul_assoc, one_mul]
 
 theorem mul_one (a : G) : a * 1 = a := by
   rw [← mul_left_inv a, ← mul_assoc, mul_right_inv, one_mul]
@@ -161,13 +159,8 @@ lemma mul_left_cancel (a b c: G) : a*b = a*c -> b = c := by
   rw [← one_mul b, ← one_mul c, ← mul_left_inv a, mul_assoc, mul_assoc, h]
 
 theorem mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
-  have h: (a * b) * (a * b)⁻¹ = a * b * b⁻¹ * a⁻¹ :=
-  calc (a * b) * (a * b)⁻¹
-    _ =  a * b * b⁻¹ * a⁻¹ := by
-      . rw [mul_assoc a b  b⁻¹, mul_right_inv, mul_right_inv, mul_one, mul_right_inv]
-  rw [mul_assoc a b b⁻¹, mul_assoc a (b*b⁻¹) ,mul_assoc b, ← mul_assoc] at h
-  apply mul_left_cancel at h
-  exact h
+  apply mul_left_cancel (a*b)
+  rw [mul_right_inv, mul_assoc, ← mul_assoc b, mul_right_inv, one_mul, mul_right_inv]
 
 end MyGroup
 
