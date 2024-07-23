@@ -36,16 +36,46 @@ variable (x y z : α)
 #check (sup_le : x ≤ z → y ≤ z → x ⊔ y ≤ z)
 
 example : x ⊓ y = y ⊓ x := by
-  sorry
+  apply le_antisymm
+  repeat
+    apply le_inf
+    exact inf_le_right
+    apply inf_le_left
 
 example : x ⊓ y ⊓ z = x ⊓ (y ⊓ z) := by
-  sorry
+  apply le_antisymm
+  · apply le_inf
+    · refine inf_le_of_left_le ?_
+      apply inf_le_left
+    . refine inf_le_inf_right z ?_
+      apply inf_le_right
+  · apply le_inf
+    · refine inf_le_inf_left x ?_
+      exact inf_le_left
+    · refine inf_le_of_right_le ?_
+      exact inf_le_right
 
 example : x ⊔ y = y ⊔ x := by
-  sorry
+  apply le_antisymm
+  · apply sup_le
+    · exact le_sup_right'
+    · exact SemilatticeSup.le_sup_left y x
+  · apply sup_le
+    · exact le_sup_right'
+    · exact SemilatticeSup.le_sup_left x y
 
 example : x ⊔ y ⊔ z = x ⊔ (y ⊔ z) := by
-  sorry
+  apply le_antisymm
+  · refine sup_le ?_ ?_
+    . refine sup_le_sup_left ?_ x
+      exact SemilatticeSup.le_sup_left y z
+    . refine le_sup_of_le_right ?_
+      exact le_sup_right'
+  · refine SemilatticeSup.sup_le x (y ⊔ z) (x ⊔ y ⊔ z) ?_ ?_
+    · refine le_sup_of_le_left ?_
+      exact SemilatticeSup.le_sup_left x y
+    · refine sup_le_sup_right ?_ z
+      exact le_sup_right'
 
 theorem absorb1 : x ⊓ (x ⊔ y) = x := by
   sorry
@@ -109,4 +139,3 @@ example (x y : X) : 0 ≤ dist x y := by
   sorry
 
 end
-
