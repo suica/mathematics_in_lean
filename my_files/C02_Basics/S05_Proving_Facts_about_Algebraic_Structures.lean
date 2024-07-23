@@ -85,7 +85,11 @@ theorem absorb1 : x ⊓ (x ⊔ y) = x := by
     · apply le_sup_left
 
 theorem absorb2 : x ⊔ x ⊓ y = x := by
-  sorry
+  apply le_antisymm
+  · refine sup_le ?_ ?_
+    · apply le_refl
+    · exact inf_le_left
+  · apply le_sup_left
 
 end
 
@@ -104,10 +108,12 @@ variable {α : Type*} [Lattice α]
 variable (a b c : α)
 
 example (h : ∀ x y z : α, x ⊓ (y ⊔ z) = x ⊓ y ⊔ x ⊓ z) : a ⊔ b ⊓ c = (a ⊔ b) ⊓ (a ⊔ c) := by
-  sorry
+  rw [h, inf_comm _ a, inf_comm (a⊔b) c, h, h]
+  simp
+  rw [inf_comm c, inf_comm c, ← sup_assoc, absorb2]
 
 example (h : ∀ x y z : α, x ⊔ y ⊓ z = (x ⊔ y) ⊓ (x ⊔ z)) : a ⊓ (b ⊔ c) = a ⊓ b ⊔ a ⊓ c := by
-  sorry
+  rw [h, sup_comm _ a, absorb2, sup_comm (a⊓b), h, ← inf_assoc, sup_comm c a, absorb1, sup_comm]
 
 end
 
