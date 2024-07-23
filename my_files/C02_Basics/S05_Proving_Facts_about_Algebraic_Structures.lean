@@ -127,13 +127,29 @@ variable (a b c : R)
 #check (mul_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a * b)
 
 example (h : a ≤ b) : 0 ≤ b - a := by
-  sorry
+  conv =>
+    congr
+    rw [← sub_self a]
+    . rw [sub_eq_add_neg, add_comm]
+    . rw [sub_eq_add_neg, add_comm]
+  apply add_le_add_left at h
+  apply h
 
-example (h: 0 ≤ b - a) : a ≤ b := by
-  sorry
+theorem hoho (h : a ≤ b) : 0 ≤ b - a := by
+  simp
+  exact h
+
+theorem haha (h: 0 ≤ b - a) : a ≤ b := by
+  simp at h
+  exact h
 
 example (h : a ≤ b) (h' : 0 ≤ c) : a * c ≤ b * c := by
-  sorry
+  apply haha
+  rw [← sub_mul]
+  apply mul_nonneg
+  apply hoho
+  exact h
+  exact h'
 
 end
 
@@ -146,6 +162,9 @@ variable (x y z : X)
 #check (dist_triangle x y z : dist x z ≤ dist x y + dist y z)
 
 example (x y : X) : 0 ≤ dist x y := by
-  sorry
+  have h: dist x x ≤ dist x y + dist y x:=by
+    apply dist_triangle
+  simp [dist_self, dist_comm] at h
+  exact h
 
 end
