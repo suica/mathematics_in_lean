@@ -42,10 +42,18 @@ theorem my_lemma4 :
     ∀ {x y ε : ℝ}, 0 < ε → ε ≤ 1 → |x| < ε → |y| < ε → |x * y| < ε := by
   intro x y ε epos ele1 xlt ylt
   calc
-    |x * y| = |x| * |y| := sorry
-    _ ≤ |x| * ε := sorry
-    _ < 1 * ε := sorry
-    _ = ε := sorry
+    |x * y| = |x| * |y| := abs_mul x y
+    _ ≤ |x| * ε := by
+      apply mul_le_mul
+      · simp
+      · linarith
+      · simp
+      · simp
+    _ < 1 * ε := by
+      apply mul_lt_mul
+      repeat
+        linarith
+    _ = ε := one_mul _
 
 def FnUb (f : ℝ → ℝ) (a : ℝ) : Prop :=
   ∀ x, f x ≤ a
