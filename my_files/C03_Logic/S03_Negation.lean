@@ -61,17 +61,29 @@ example (h : Monotone f) (h' : f a < f b) : a < b := by
 
 
 example (h : a ≤ b) (h' : f b < f a) : ¬Monotone f := by
-  sorry
+  intro monf
+  have fa_le_fb := monf h
+  apply not_lt_of_ge at h'
+  exact h'
+  exact fa_le_fb
 
 example : ¬∀ {f : ℝ → ℝ}, Monotone f → ∀ {a b}, f a ≤ f b → a ≤ b := by
   intro h
   let f := fun x : ℝ ↦ (0 : ℝ)
-  have monof : Monotone f := by sorry
+  have monof : Monotone f := by
+    intro a b
+    simp
   have h' : f 1 ≤ f 0 := le_refl _
-  sorry
+  have k := @h f monof 1 0 h'
+  linarith
 
 example (x : ℝ) (h : ∀ ε > 0, x < ε) : x ≤ 0 := by
-  sorry
+  #check le_of_not_gt
+  apply le_of_not_gt
+  intro xgt0
+  apply h at xgt0
+  apply lt_irrefl at xgt0
+  exact xgt0
 
 end
 
@@ -79,16 +91,25 @@ section
 variable {α : Type*} (P : α → Prop) (Q : Prop)
 
 example (h : ¬∃ x, P x) : ∀ x, ¬P x := by
-  sorry
+  intro x
+  intro h'
+  apply h
+  use x
 
 example (h : ∀ x, ¬P x) : ¬∃ x, P x := by
-  sorry
+  intro h'
+  rcases h' with ⟨x, h'⟩
+  apply h
+  apply h'
 
 example (h : ¬∀ x, P x) : ∃ x, ¬P x := by
   sorry
 
 example (h : ∃ x, ¬P x) : ¬∀ x, P x := by
-  sorry
+  intro h'
+  rcases h with ⟨x, h''⟩
+  apply h''
+  apply h'
 
 example (h : ¬∀ x, P x) : ∃ x, ¬P x := by
   by_contra h'
