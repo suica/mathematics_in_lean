@@ -103,7 +103,12 @@ example (h : ∀ x, ¬P x) : ¬∃ x, P x := by
   apply h'
 
 example (h : ¬∀ x, P x) : ∃ x, ¬P x := by
-  sorry
+  by_contra h'
+  apply h
+  intro x
+  by_contra h''
+  apply h'
+  use x
 
 example (h : ∃ x, ¬P x) : ¬∀ x, P x := by
   intro h'
@@ -120,10 +125,14 @@ example (h : ¬∀ x, P x) : ∃ x, ¬P x := by
   exact h' ⟨x, h''⟩
 
 example (h : ¬¬Q) : Q := by
-  sorry
+  by_contra h'
+  apply h
+  exact h'
 
 example (h : Q) : ¬¬Q := by
-  sorry
+  intro h'
+  apply h'
+  exact h
 
 end
 
