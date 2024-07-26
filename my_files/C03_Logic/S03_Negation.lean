@@ -140,7 +140,16 @@ section
 variable (f : ℝ → ℝ)
 
 example (h : ¬FnHasUb f) : ∀ a, ∃ x, f x > a := by
-  sorry
+  intro a
+  by_contra h'
+  apply h
+  use a
+  intro x
+  apply le_of_not_gt
+  intro k
+  apply h'
+  use x
+
 
 example (h : ¬∀ a, ∃ x, f x > a) : FnHasUb f := by
   push_neg at h
@@ -152,7 +161,9 @@ example (h : ¬FnHasUb f) : ∀ a, ∃ x, f x > a := by
   exact h
 
 example (h : ¬Monotone f) : ∃ x y, x ≤ y ∧ f y < f x := by
-  sorry
+  dsimp [Monotone] at h
+  push_neg at h
+  exact h
 
 example (h : ¬FnHasUb f) : ∀ a, ∃ x, f x > a := by
   contrapose! h
