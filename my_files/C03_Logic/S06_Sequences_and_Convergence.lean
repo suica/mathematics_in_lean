@@ -134,7 +134,10 @@ theorem convergesTo_unique {s : ℕ → ℝ} {a b : ℝ}
       (sa : ConvergesTo s a) (sb : ConvergesTo s b) :
     a = b := by
   by_contra abne
-  have : |a - b| > 0 := by sorry
+  have : |a - b| > 0 := by
+    simp
+    exact sub_ne_zero_of_ne abne
+    done
   let ε := |a - b| / 2
   have εpos : ε > 0 := by
     change |a - b| / 2 > 0
@@ -142,9 +145,31 @@ theorem convergesTo_unique {s : ℕ → ℝ} {a b : ℝ}
   rcases sa ε εpos with ⟨Na, hNa⟩
   rcases sb ε εpos with ⟨Nb, hNb⟩
   let N := max Na Nb
-  have absa : |s N - a| < ε := by sorry
-  have absb : |s N - b| < ε := by sorry
-  have : |a - b| < |a - b| := by sorry
+  have absa : |s N - a| < ε := by
+    have NgeNa: N ≥ Na := by
+      exact Nat.le_max_left Na Nb
+    apply hNa N NgeNa
+  have absb : |s N - b| < ε := by
+    have NgeNb: N ≥ Nb := by
+      exact Nat.le_max_right Na Nb
+    apply hNb N NgeNb
+  have : |a - b| < |a - b| := by
+    have h₀: |s N - a| + |s N - b| ≥ |s N - a - (s N - b)| := by
+      exact abs_sub (s N - a) (s N - b)
+    have h₁: |s N - a - (s N - b)| = |a-b| := by
+      simp
+      exact abs_sub_comm b a
+    have h₃ : |s N - a| + |s N - b| < ε + ε := by
+      apply add_lt_add
+      exact absa
+      exact absb
+    rw [h₁] at h₀
+    apply lt_of_le_of_lt h₀
+    have: ε+ε = |a-b|:= by ring
+    rw [← this]
+    exact h₃
+
+
   exact lt_irrefl _ this
 
 section
