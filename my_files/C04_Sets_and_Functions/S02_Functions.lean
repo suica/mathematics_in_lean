@@ -242,16 +242,51 @@ example : range exp = { y | y > 0 } := by
   rw [exp_log ypos]
 
 example : InjOn sqrt { x | x ≥ 0 } := by
-  sorry
+  intro x xpos y ypos
+  intro h
+  calc x
+    _ = √x * √x := by exact Eq.symm (mul_self_sqrt xpos)
+    _ = √y * √y := by exact abs_eq_iff_mul_self_eq.mp (congrArg abs h)
+    _ = y := by exact mul_self_sqrt ypos
+
+
 
 example : InjOn (fun x ↦ x ^ 2) { x : ℝ | x ≥ 0 } := by
-  sorry
+  intro x xpos y ypos
+  intro h
+  dsimp at h
+  simp at *
+  apply sq_eq_sq_iff_eq_or_eq_neg.mp at h
+  rcases h with a | b
+  use a
+  rw [b] at xpos
+  linarith
 
 example : sqrt '' { x | x ≥ 0 } = { y | y ≥ 0 } := by
-  sorry
+  ext a
+  constructor
+  simp at *
+  · intro x xge h
+    rw [← h]
+    exact sqrt_nonneg x
+  · simp at *
+    intro age
+    use a^2
+    constructor
+    exact sq_nonneg a
+    exact sqrt_sq age
 
 example : (range fun x ↦ x ^ 2) = { y : ℝ | y ≥ 0 } := by
-  sorry
+  ext x
+  constructor
+  · simp at *
+    intro a h
+    rw [← h]
+    exact sq_nonneg a
+  · simp at *
+    intro h
+    use √x
+    exact sq_sqrt h
 
 end
 
@@ -282,8 +317,12 @@ variable (f : α → β)
 
 open Function
 
-example : Injective f ↔ LeftInverse (inverse f) f :=
-  sorry
+example : Injective f ↔ LeftInverse (inverse f) f := by
+  constructor
+  · rintro injf x
+    #check injf
+    done
+  · done
 
 example : Surjective f ↔ RightInverse (inverse f) f :=
   sorry
