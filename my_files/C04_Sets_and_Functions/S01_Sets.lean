@@ -214,10 +214,22 @@ section
 variable (ssubt : s ⊆ t)
 
 example (h₀ : ∀ x ∈ t, ¬Even x) (h₁ : ∀ x ∈ t, Prime x) : ∀ x ∈ s, ¬Even x ∧ Prime x := by
-  sorry
+  intro x xs
+  constructor
+  · apply h₀
+    apply ssubt
+    exact xs
+  · apply h₁
+    apply ssubt
+    exact xs
 
 example (h : ∃ x ∈ s, ¬Even x ∧ Prime x) : ∃ x ∈ t, Prime x := by
-  sorry
+  rcases h with ⟨w, ⟨ws, ⟨nevenw, pw⟩⟩⟩
+  use w
+  constructor
+  · apply ssubt
+    exact ws
+  · exact pw
 
 end
 
@@ -256,7 +268,30 @@ example : (⋂ i, A i ∩ B i) = (⋂ i, A i) ∩ ⋂ i, B i := by
 
 
 example : (s ∪ ⋂ i, A i) = ⋂ i, A i ∪ s := by
-  sorry
+  ext x
+  simp only [mem_inter_iff, mem_iInter]
+  constructor
+  · rintro h
+    intro i
+    rcases h with ⟨xs⟩ | xi
+    simp
+    · right
+      exact xs
+    · simp
+      left
+      apply xi
+      simp
+  · rintro h
+    simp
+    by_cases xs: x ∈ s
+    · left
+      exact xs
+    · right
+      simp at h
+      intro i
+      rcases h i with xai | xs'
+      . exact xai
+      . contradiction
 
 def primes : Set ℕ :=
   { x | Nat.Prime x }
@@ -277,7 +312,14 @@ example : (⋂ p ∈ primes, { x | ¬p ∣ x }) ⊆ { x | x = 1 } := by
   apply Nat.exists_prime_and_dvd
 
 example : (⋃ p ∈ primes, { x | x ≤ p }) = univ := by
-  sorry
+  apply eq_univ_of_forall
+  simp
+  intro x
+  rcases Nat.exists_infinite_primes x with ⟨p, ⟨ xle, xp⟩ ⟩
+  use p
+  constructor
+  · apply xp
+  · exact xle
 
 end
 
