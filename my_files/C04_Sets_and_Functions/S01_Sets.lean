@@ -99,7 +99,8 @@ example : s ∩ t = t ∩ s := by
   . rintro x ⟨xt, xs⟩; exact ⟨xs, xt⟩
 
 example : s ∩ t = t ∩ s :=
-    Subset.antisymm sorry sorry
+    Subset.antisymm (fun x ⟨xs, xt⟩ ↦ ⟨xt ,xs⟩) (fun x ⟨xt, xs⟩ ↦ ⟨xs ,xt⟩)
+
 example : s ∩ (s ∪ t) = s := by
   sorry
 
