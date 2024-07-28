@@ -102,16 +102,53 @@ example : s ∩ t = t ∩ s :=
     Subset.antisymm (fun x ⟨xs, xt⟩ ↦ ⟨xt ,xs⟩) (fun x ⟨xt, xs⟩ ↦ ⟨xs ,xt⟩)
 
 example : s ∩ (s ∪ t) = s := by
-  sorry
+  ext x
+  simp
+  intro xs
+  left
+  exact xs
 
 example : s ∪ s ∩ t = s := by
-  sorry
+  ext x
+  simp
+  rintro xs _
+  exact xs
 
 example : s \ t ∪ t = s ∪ t := by
-  sorry
+  ext x
+  simp
 
 example : s \ t ∪ t \ s = (s ∪ t) \ (s ∩ t) := by
-  sorry
+  ext x
+  simp
+  constructor
+  · rintro h
+    rcases h with ⟨xs, xnt⟩ | ⟨xt, xns⟩
+    constructor
+    . left
+      exact xs
+    . intro _
+      apply xnt
+    · constructor
+      right
+      exact xt
+      intro k
+      contradiction
+      done
+  · rintro h
+    rcases h with ⟨xs | xt, h''⟩
+    . constructor
+      apply And.intro
+      exact xs
+      exact h'' xs
+    . right
+      apply And.intro
+      exact xt
+      by_contra xs
+      apply h''
+      exact xs
+      exact xt
+
 
 def evens : Set ℕ :=
   { n | Even n }
@@ -120,7 +157,6 @@ def odds : Set ℕ :=
   { n | ¬Even n }
 
 example : evens ∪ odds = univ := by
-  rw [evens, odds]
   ext n
   simp
   apply Classical.em
@@ -132,7 +168,17 @@ example (x : ℕ) : x ∈ (univ : Set ℕ) :=
   trivial
 
 example : { n | Nat.Prime n } ∩ { n | n > 2 } ⊆ { n | ¬Even n } := by
-  sorry
+  intro n
+  rintro ⟨np, nge⟩
+  simp at *
+  intro e
+  apply Nat.Prime.eq_two_or_odd at np
+  rcases np with eq2 | nodd
+  · linarith
+  · apply Nat.even_iff.mp at e
+    rw [e] at nodd
+    contradiction
+
 
 #print Prime
 
