@@ -295,12 +295,12 @@ variable {α β : Type*} [Inhabited α]
 
 #check (default : α)
 
-variable (P : α → Prop) (h : ∃ x, P x)
+-- variable (P : α → Prop) (h : ∃ x, P x)
 
-#check Classical.choose h
+-- #check Classical.choose h
 
-example : P (Classical.choose h) :=
-  Classical.choose_spec h
+-- example : P (Classical.choose h) :=
+--   Classical.choose_spec h
 
 noncomputable section
 
@@ -317,15 +317,28 @@ variable (f : α → β)
 
 open Function
 
+#print LeftInverse
+
 example : Injective f ↔ LeftInverse (inverse f) f := by
   constructor
   · rintro injf x
-    #check injf
-    done
-  · done
+    apply injf
+    apply inverse_spec
+    use x
+  · rintro i x y h
+    rw [← i x, h]
+    exact i y
 
-example : Surjective f ↔ RightInverse (inverse f) f :=
-  sorry
+
+example : Surjective f ↔ RightInverse (inverse f) f := by
+  constructor
+  · rintro sujf x
+    rcases sujf x with ⟨w, fwx⟩
+    apply inverse_spec
+    use w
+  · rintro h b
+    use inverse f b
+    apply h
 
 end
 
