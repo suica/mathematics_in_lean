@@ -144,13 +144,29 @@ example : f '' s ∩ v = f '' (s ∩ f ⁻¹' v) := by
 
 
 example : f '' (s ∩ f ⁻¹' u) ⊆ f '' s ∩ u := by
-  sorry
+  rintro a ⟨w, ⟨⟨ws, fwu⟩, fwa⟩⟩
+  simp at *
+  constructor
+  · use w
+  · rw [← fwa]
+    use fwu
 
 example : s ∩ f ⁻¹' u ⊆ f ⁻¹' (f '' s ∩ u) := by
-  sorry
+  rintro a ⟨as, fau⟩
+  simp at *
+  constructor
+  · use a
+  · use fau
 
 example : s ∪ f ⁻¹' u ⊆ f ⁻¹' (f '' s ∪ u) := by
-  sorry
+  rintro a (⟨as⟩ | h)
+  simp at *
+  · left
+    use a
+  · simp at *
+    right
+    use h
+
 
 variable {I : Type*} (A : I → Set α) (B : I → Set β)
 
