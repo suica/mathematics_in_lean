@@ -24,6 +24,7 @@ example : f '' (s ∪ t) = f '' s ∪ f '' t := by
       use x, xs
     right
     use x, xt
+
   rintro (⟨x, xs, rfl⟩ | ⟨x, xt, rfl⟩)
   · use x, Or.inl xs
   use x, Or.inr xt
@@ -34,40 +35,113 @@ example : s ⊆ f ⁻¹' (f '' s) := by
   use x, xs
 
 example : f '' s ⊆ v ↔ s ⊆ f ⁻¹' v := by
-  sorry
+  constructor
+  simp at *
+  rintro h a afs
+  rcases afs with ⟨a', ⟨a's, faeqa⟩⟩
+  exact mem_of_eq_of_mem (id (Eq.symm faeqa)) (h a's)
 
 example (h : Injective f) : f ⁻¹' (f '' s) ⊆ s := by
-  sorry
+  rintro x ⟨w, ⟨ws, fwfx⟩⟩
+  rw [← h fwfx]
+  assumption
 
 example : f '' (f ⁻¹' u) ⊆ u := by
-  sorry
+  rintro a ⟨w, ⟨wfu, fwa⟩⟩
+  simp at *
+  rw [fwa] at wfu
+  exact wfu
+
 
 example (h : Surjective f) : u ⊆ f '' (f ⁻¹' u) := by
-  sorry
+  rintro a au
+  simp at *
+  rcases h a with ⟨x, fxa⟩
+  use x
+  constructor
+  . rw [← fxa] at au
+    exact au
+  . exact fxa
 
 example (h : s ⊆ t) : f '' s ⊆ f '' t := by
-  sorry
+  rintro a ⟨w, ⟨ws, fwa⟩⟩
+  simp at *
+  apply h at ws
+  use w, ws
 
 example (h : u ⊆ v) : f ⁻¹' u ⊆ f ⁻¹' v := by
-  sorry
+  rintro a b
+  apply h
+  exact b
 
 example : f ⁻¹' (u ∪ v) = f ⁻¹' u ∪ f ⁻¹' v := by
-  sorry
+  ext a
+  constructor
+  · simp at *
+  · simp at *
 
 example : f '' (s ∩ t) ⊆ f '' s ∩ f '' t := by
-  sorry
+  rintro a ⟨w,⟨wsn, fwa⟩⟩
+  simp at *
+  constructor
+  · use w, wsn.left
+  · use w, wsn.right
 
 example (h : Injective f) : f '' s ∩ f '' t ⊆ f '' (s ∩ t) := by
-  sorry
+  rintro a ⟨b, c, d⟩
+  simp at *
+  rcases b with ⟨w, ⟨ws, fwa⟩⟩
+  use w
+  constructor
+  · constructor
+    exact ws
+    have h'': f w = f c :=
+      calc f w
+        _ = a := fwa
+        _ = f c := Eq.symm d.right
+    rw [← h h''] at d
+    exact d.left
+  · exact fwa
 
 example : f '' s \ f '' t ⊆ f '' (s \ t) := by
-  sorry
+  rintro a ⟨l, r⟩
+  simp at *
+  rcases l with ⟨w, ⟨ws, fwa⟩⟩
+  use w
+  constructor
+  · constructor
+    exact ws
+    by_cases h: w ∈ t
+    · apply r at h
+      contradiction
+    · exact h
+  · exact fwa
 
 example : f ⁻¹' u \ f ⁻¹' v ⊆ f ⁻¹' (u \ v) := by
-  sorry
+  rintro a ⟨l, r⟩
+  simp at *
+  exact ⟨l, r⟩
 
 example : f '' s ∩ v = f '' (s ∩ f ⁻¹' v) := by
-  sorry
+  ext a
+  constructor
+  · rintro ⟨l, r⟩
+    simp at *
+    rcases l with ⟨w, ⟨ws, fwa⟩⟩
+    use w
+    constructor
+    · constructor
+      exact ws
+      rw [fwa]
+      exact r
+    · exact fwa
+  · rintro ⟨w, ⟨⟨ws, h⟩, fla⟩⟩
+    simp at *
+    constructor
+    · use w, ws
+    · rw [← fla]
+      exact h
+
 
 example : f '' (s ∩ f ⁻¹' u) ⊆ f '' s ∩ u := by
   sorry
@@ -81,19 +155,48 @@ example : s ∪ f ⁻¹' u ⊆ f ⁻¹' (f '' s ∪ u) := by
 variable {I : Type*} (A : I → Set α) (B : I → Set β)
 
 example : (f '' ⋃ i, A i) = ⋃ i, f '' A i := by
-  sorry
+  ext a
+  simp at *
+  constructor
+  · rintro ⟨w, ⟨h, fwa⟩⟩
+    rcases h with ⟨i, wai⟩
+    use i, w
+  · rintro ⟨i, ⟨w, ⟨wai, fwa⟩⟩⟩
+    use w
+    constructor
+    · use i
+    · use fwa
 
 example : (f '' ⋂ i, A i) ⊆ ⋂ i, f '' A i := by
-  sorry
+  rintro h
+  simp at *
+  rintro a b fah i
+  apply b at i
+  use a
 
 example (i : I) (injf : Injective f) : (⋂ i, f '' A i) ⊆ f '' ⋂ i, A i := by
-  sorry
+  rintro b h
+  simp at *
+  rcases h with i
+  rcases h i with ⟨w, ⟨wai, fwb⟩⟩
+  use w
+  constructor
+  · intro i'
+    rcases h i' with ⟨w', ⟨w'ai, fwb'⟩⟩
+    have h': f w' = f w := by
+      rw [← fwb] at fwb'
+      exact fwb'
+    rw [← injf h']
+    exact w'ai
+  · use fwb
 
 example : (f ⁻¹' ⋃ i, B i) = ⋃ i, f ⁻¹' B i := by
-  sorry
+  ext a
+  simp at *
 
 example : (f ⁻¹' ⋂ i, B i) = ⋂ i, f ⁻¹' B i := by
-  sorry
+  ext a
+  simp at *
 
 example : InjOn f s ↔ ∀ x₁ ∈ s, ∀ x₂ ∈ s, f x₁ = f x₂ → x₁ = x₂ :=
   Iff.refl _
