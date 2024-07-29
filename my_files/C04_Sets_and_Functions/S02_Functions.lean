@@ -355,10 +355,13 @@ theorem Cantor : ∀ f : α → Set α, ¬Surjective f := by
     have : j ∉ f j := by rwa [h] at h'
     contradiction
   have h₂ : j ∈ S
-  sorry
   have h₃ : j ∉ S
-  sorry
-  contradiction
+  · rw [← h]
+    exact h₁
+  · contradiction
+  · apply h₁
+    rw [h]
+    exact h₂
 
 -- COMMENTS: TODO: improve this
 end
