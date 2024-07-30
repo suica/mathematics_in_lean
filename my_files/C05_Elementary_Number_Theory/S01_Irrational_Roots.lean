@@ -49,22 +49,31 @@ example (a b c : Nat) (h : a * b = a * c) (h' : a ≠ 0) : b = c :=
   -- apply? suggests the following:
   (mul_right_inj' h').mp h
 
+#check even_of_even_sqr
+#check Nat.dvd_gcd
+
 example {m n : ℕ} (coprime_mn : m.Coprime n) : m ^ 2 ≠ 2 * n ^ 2 := by
   intro sqr_eq
   have : 2 ∣ m := by
-    sorry
+    -- rw [pow_two, pow_two] at sqr_eq
+    refine even_of_even_sqr ?h
+    exact Dvd.intro (n ^ 2) (id (Eq.symm sqr_eq))
+
   obtain ⟨k, meq⟩ := dvd_iff_exists_eq_mul_left.mp this
-  have : 2 * (2 * k ^ 2) = 2 * n ^ 2 := by
+  have hihi: 2 * (2 * k ^ 2) = 2 * n ^ 2 := by
     rw [← sqr_eq, meq]
     ring
-  have : 2 * k ^ 2 = n ^ 2 :=
-    sorry
-  have : 2 ∣ n := by
-    sorry
-  have : 2 ∣ m.gcd n := by
-    sorry
+  have hoho: 2 * k ^ 2 = n ^ 2 :=
+    (mul_right_inj' (show 2≠ 0 by linarith)).mp hihi
+
+  have haha: 2 ∣ n := by
+    apply even_of_even_sqr
+    exact Dvd.intro (k ^ 2) hoho
+
+  have cao: 2 ∣ m.gcd n := by
+    exact Nat.dvd_gcd this haha
   have : 2 ∣ 1 := by
-    sorry
+    exact (Nat.ModEq.dvd_iff (congrFun (congrArg HMod.hMod coprime_mn) m) this).mp cao
   norm_num at this
 
 example {m n p : ℕ} (coprime_mn : m.Coprime n) (prime_p : p.Prime) : m ^ 2 ≠ p * n ^ 2 := by
@@ -117,4 +126,3 @@ example {m n k r : ℕ} (nnz : n ≠ 0) (pow_eq : m ^ k = r * n ^ k) {p : ℕ} (
   sorry
 
 #check multiplicity
-
