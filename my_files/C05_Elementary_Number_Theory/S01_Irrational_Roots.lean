@@ -102,7 +102,7 @@ example {m n p : ℕ} (nnz : n ≠ 0) (prime_p : p.Prime) : m ^ 2 ≠ p * n ^ 2 
   intro sqr_eq
   have nsqr_nez : n ^ 2 ≠ 0 := by simpa
   have eq1 : Nat.factorization (m ^ 2) p = 2 * m.factorization p := by
-    sorry
+    exact factorization_pow' m 2 p
   have eq2 : (p * n ^ 2).factorization p = 2 * n.factorization p + 1 := by
     sorry
   have : 2 * m.factorization p % 2 = (2 * n.factorization p + 1) % 2 := by
@@ -116,13 +116,15 @@ example {m n k r : ℕ} (nnz : n ≠ 0) (pow_eq : m ^ k = r * n ^ k) {p : ℕ} (
   · simp
   have npow_nz : n ^ k ≠ 0 := fun npowz ↦ nnz (pow_eq_zero npowz)
   have eq1 : (m ^ k).factorization p = k * m.factorization p := by
-    sorry
+    exact factorization_pow' m k p
   have eq2 : (r.succ * n ^ k).factorization p =
       k * n.factorization p + r.succ.factorization p := by
     sorry
   have : r.succ.factorization p = k * m.factorization p - k * n.factorization p := by
     rw [← eq1, pow_eq, eq2, add_comm, Nat.add_sub_cancel]
   rw [this]
-  sorry
+  refine Nat.dvd_sub' ?succ.h₁ ?succ.h₂
+  exact Nat.dvd_mul_right k (m.factorization p)
+  exact Nat.dvd_mul_right k (n.factorization p)
 
 #check multiplicity
