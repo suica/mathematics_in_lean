@@ -76,8 +76,40 @@ example {m n : ℕ} (coprime_mn : m.Coprime n) : m ^ 2 ≠ 2 * n ^ 2 := by
     exact (Nat.ModEq.dvd_iff (congrFun (congrArg HMod.hMod coprime_mn) m) this).mp cao
   norm_num at this
 
+#check Nat.le_of_dvd
+
 example {m n p : ℕ} (coprime_mn : m.Coprime n) (prime_p : p.Prime) : m ^ 2 ≠ p * n ^ 2 := by
-  sorry
+  by_contra h
+  have haha: m ^ 2 ∣ p * n^2 := by
+    exact dvd_of_eq h
+  have h' : m ∣ p * n ^ 2 := by
+    exact Dvd.intro_left (m.pow 1) h
+  have coprime_mnsq: m.Coprime (n^2):= by
+    exact Nat.Coprime.pow_right 2 coprime_mn
+  have coprime_msqnsq: (m^2).Coprime (n^2):= by
+    exact Nat.Coprime.pow 2 2 coprime_mn
+  rw [h] at coprime_msqnsq
+  let haha := coprime_msqnsq.gcd_eq_one
+  #check haha
+  conv at haha =>
+    lhs
+    rhs
+    rw [← Nat.one_mul (n^2)]
+
+  rw [Nat.gcd_mul_right, ] at haha
+  have : p.gcd 1 = 1:= by
+    exact Nat.gcd_one_right p
+  rw [this] at haha
+  simp at haha
+  rw [haha] at h
+  simp at h
+  have : ¬p.Prime := by
+    rw [← h]
+    refine Nat.Prime.not_prime_pow' ?hn
+    simp
+  apply this
+  exact prime_p
+
 #check Nat.factors
 #check Nat.prime_of_mem_factors
 #check Nat.prod_factors
@@ -104,7 +136,13 @@ example {m n p : ℕ} (nnz : n ≠ 0) (prime_p : p.Prime) : m ^ 2 ≠ p * n ^ 2 
   have eq1 : Nat.factorization (m ^ 2) p = 2 * m.factorization p := by
     exact factorization_pow' m 2 p
   have eq2 : (p * n ^ 2).factorization p = 2 * n.factorization p + 1 := by
-    sorry
+    rw [Nat.factorization_mul, Nat.Prime.factorization]
+    rw [add_comm]
+    simp
+    assumption
+    exact Nat.Prime.ne_zero prime_p
+    exact nsqr_nez
+
   have : 2 * m.factorization p % 2 = (2 * n.factorization p + 1) % 2 := by
     rw [← eq1, sqr_eq, eq2]
   rw [add_comm, Nat.add_mul_mod_self_left, Nat.mul_mod_right] at this
@@ -119,7 +157,11 @@ example {m n k r : ℕ} (nnz : n ≠ 0) (pow_eq : m ^ k = r * n ^ k) {p : ℕ} (
     exact factorization_pow' m k p
   have eq2 : (r.succ * n ^ k).factorization p =
       k * n.factorization p + r.succ.factorization p := by
-    sorry
+    simp
+    rw [Nat.factorization_mul, add_comm]
+    simp
+    exact Ne.symm (Nat.zero_ne_add_one r)
+    exact npow_nz
   have : r.succ.factorization p = k * m.factorization p - k * n.factorization p := by
     rw [← eq1, pow_eq, eq2, add_comm, Nat.add_sub_cancel]
   rw [this]
