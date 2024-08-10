@@ -106,7 +106,12 @@ theorem sum_id (n : ℕ) : ∑ i in range (n + 1), i = n * (n + 1) / 2 := by
   ring
 
 theorem sum_sqr (n : ℕ) : ∑ i in range (n + 1), i ^ 2 = n * (n + 1) * (2 * n + 1) / 6 := by
-  sorry
+  symm
+  apply Nat.div_eq_of_eq_mul_right (by norm_num : 0 < 6)
+  induction' n with n ih
+  · simp
+  rw [Finset.sum_range_succ, mul_add 6, ← ih]
+  ring
 end
 
 inductive MyNat
@@ -141,13 +146,33 @@ theorem add_comm (m n : MyNat) : add m n = add n m := by
   rw [add, succ_add, ih]
 
 theorem add_assoc (m n k : MyNat) : add (add m n) k = add m (add n k) := by
-  sorry
-theorem mul_add (m n k : MyNat) : mul m (add n k) = add (mul m n) (mul m k) := by
-  sorry
+  induction' m with m ih
+  · rw [zero_add, zero_add]
+  · rw [succ_add, succ_add, succ_add, ih]
+
 theorem zero_mul (n : MyNat) : mul zero n = zero := by
-  sorry
+  induction' n with n inh
+  . rw [mul]
+  . rw [mul, add_comm, zero_add, inh]
+
+theorem mul_add (m n k : MyNat) : mul m (add n k) = add (mul m n) (mul m k) := by
+  induction' n with n inh
+  · rw [zero_add, mul, zero_add]
+  · rw [succ_add, mul, inh, mul, add_assoc, add_assoc]
+    conv =>
+      rhs
+      rhs
+      rw [add_comm]
+
 theorem succ_mul (m n : MyNat) : mul (succ m) n = add (mul m n) n := by
-  sorry
+  induction' n with n inh
+  · rw [add_comm, zero_add, mul, mul]
+  · simp [mul, add, add_comm, inh]
+    rw [← add_assoc, ← add_assoc, add_comm m]
 theorem mul_comm (m n : MyNat) : mul m n = mul n m := by
-  sorry
+  induction' m with m imh
+  induction' n with n inh
+  · rw [zero_mul]
+  · rw [zero_mul, succ_mul, ← inh, zero_mul, zero_add]
+  · rw [succ_mul, imh, mul]
 end MyNat
