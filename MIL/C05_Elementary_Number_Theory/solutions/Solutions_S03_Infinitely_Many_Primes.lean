@@ -1,5 +1,4 @@
-import Mathlib.Data.Nat.Prime
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Nat.Prime.Basic
 import MIL.Common
 
 open BigOperators
@@ -10,7 +9,7 @@ theorem two_le {m : ℕ} (h0 : m ≠ 0) (h1 : m ≠ 1) : 2 ≤ m := by
   cases m; contradiction
   case succ m =>
     cases m; contradiction
-    repeat' apply Nat.succ_le_succ
+    repeat apply Nat.succ_le_succ
     apply zero_le
 
 theorem exists_prime_factor {n : Nat} (h : 2 ≤ n) : ∃ p : Nat, p.Prime ∧ p ∣ n := by
@@ -27,26 +26,26 @@ theorem exists_prime_factor {n : Nat} (h : 2 ≤ n) : ∃ p : Nat, p.Prime ∧ p
   have mgt2 : 2 ≤ m := two_le this mne1
   by_cases mp : m.Prime
   · use m, mp
-  . rcases ih m mltn mgt2 mp with ⟨p, pp, pdvd⟩
+  · rcases ih m mltn mgt2 mp with ⟨p, pp, pdvd⟩
     use p, pp
     apply pdvd.trans mdvdn
 
 theorem primes_infinite : ∀ n, ∃ p > n, Nat.Prime p := by
   intro n
-  have : 2 ≤ Nat.factorial (n + 1) + 1 := by
+  have : 2 ≤ Nat.factorial n + 1 := by
     apply Nat.succ_le_succ
     exact Nat.succ_le_of_lt (Nat.factorial_pos _)
   rcases exists_prime_factor this with ⟨p, pp, pdvd⟩
-  refine' ⟨p, _, pp⟩
+  refine ⟨p, ?_, pp⟩
   show p > n
   by_contra ple
-  push_neg  at ple
-  have : p ∣ Nat.factorial (n + 1) := by
+  push_neg at ple
+  have : p ∣ Nat.factorial n := by
     apply Nat.dvd_factorial
     apply pp.pos
     linarith
   have : p ∣ 1 := by
-    convert Nat.dvd_sub' pdvd this
+    convert Nat.dvd_sub pdvd this
     simp
   show False
   have := Nat.le_of_dvd zero_lt_one this
@@ -87,7 +86,7 @@ theorem _root_.Nat.Prime.eq_of_dvd_of_prime {p q : ℕ}
   assumption
 
 theorem mem_of_dvd_prod_primes {s : Finset ℕ} {p : ℕ} (prime_p : p.Prime) :
-    (∀ n ∈ s, Nat.Prime n) → (p ∣ ∏ n in s, n) → p ∈ s := by
+    (∀ n ∈ s, Nat.Prime n) → (p ∣ ∏ n ∈ s, n) → p ∈ s := by
   intro h₀ h₁
   induction' s using Finset.induction_on with a s ans ih
   · simp at h₁
@@ -103,25 +102,25 @@ theorem mem_of_dvd_prod_primes {s : Finset ℕ} {p : ℕ} (prime_p : p.Prime) :
 theorem primes_infinite' : ∀ s : Finset Nat, ∃ p, Nat.Prime p ∧ p ∉ s := by
   intro s
   by_contra h
-  push_neg  at h
+  push_neg at h
   set s' := s.filter Nat.Prime with s'_def
   have mem_s' : ∀ {n : ℕ}, n ∈ s' ↔ n.Prime := by
     intro n
     simp [s'_def]
     apply h
-  have : 2 ≤ (∏ i in s', i) + 1 := by
+  have : 2 ≤ (∏ i ∈ s', i) + 1 := by
     apply Nat.succ_le_succ
     apply Nat.succ_le_of_lt
     apply Finset.prod_pos
     intro n ns'
     apply (mem_s'.mp ns').pos
   rcases exists_prime_factor this with ⟨p, pp, pdvd⟩
-  have : p ∣ ∏ i in s', i := by
+  have : p ∣ ∏ i ∈ s', i := by
     apply dvd_prod_of_mem
     rw [mem_s']
     apply pp
   have : p ∣ 1 := by
-    convert Nat.dvd_sub' pdvd this
+    convert Nat.dvd_sub pdvd this
     simp
   show False
   have := Nat.le_of_dvd zero_lt_one this
@@ -169,7 +168,7 @@ theorem exists_prime_factor_mod_4_eq_3 {n : Nat} (h : n % 4 = 3) :
   · use n
   induction' n using Nat.strong_induction_on with n ih
   rw [Nat.prime_def_lt] at np
-  push_neg  at np
+  push_neg at np
   rcases np (two_le_of_mod_4_eq_3 h) with ⟨m, mltn, mdvdn, mne1⟩
   have mge2 : 2 ≤ m := by
     apply two_le _ mne1
@@ -195,7 +194,7 @@ theorem exists_prime_factor_mod_4_eq_3 {n : Nat} (h : n % 4 = 3) :
 
 theorem primes_mod_4_eq_3_infinite : ∀ n, ∃ p > n, Nat.Prime p ∧ p % 4 = 3 := by
   by_contra h
-  push_neg  at h
+  push_neg at h
   rcases h with ⟨n, hn⟩
   have : ∃ s : Finset Nat, ∀ p : ℕ, p.Prime ∧ p % 4 = 3 ↔ p ∈ s := by
     apply ex_finset_of_bounded
@@ -204,7 +203,7 @@ theorem primes_mod_4_eq_3_infinite : ∀ n, ∃ p > n, Nat.Prime p ∧ p % 4 = 3
     rcases hn with ⟨p, ⟨pp, p4⟩, pltn⟩
     exact ⟨p, pltn, pp, p4⟩
   rcases this with ⟨s, hs⟩
-  have h₁ : ((4 * ∏ i in erase s 3, i) + 3) % 4 = 3 := by
+  have h₁ : ((4 * ∏ i ∈ erase s 3, i) + 3) % 4 = 3 := by
     rw [add_comm, Nat.add_mul_mod_self_left]
   rcases exists_prime_factor_mod_4_eq_3 h₁ with ⟨p, pp, pdvd, p4eq⟩
   have ps : p ∈ s := by
@@ -221,13 +220,13 @@ theorem primes_mod_4_eq_3_infinite : ∀ n, ∃ p > n, Nat.Prime p ∧ p % 4 = 3
       simp [← hs n]
       tauto
     simp at this
-  have : p ∣ 4 * ∏ i in erase s 3, i := by
+  have : p ∣ 4 * ∏ i ∈ erase s 3, i := by
     apply dvd_trans _ (dvd_mul_left _ _)
     apply dvd_prod_of_mem
     simp
     constructor <;> assumption
   have : p ∣ 3 := by
-    convert Nat.dvd_sub' pdvd this
+    convert Nat.dvd_sub pdvd this
     simp
   have : p = 3 := by
     apply pp.eq_of_dvd_of_prime Nat.prime_three this

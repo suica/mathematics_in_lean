@@ -1,6 +1,6 @@
 import MIL.Common
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Basic
 
 namespace C03S04
 
@@ -137,7 +137,7 @@ variable {α : Type*} [PartialOrder α]
 variable (a b : α)
 
 example : a < b ↔ a ≤ b ∧ a ≠ b := by
-  rw [lt_iff_le_not_le]
+  rw [lt_iff_le_not_ge]
   sorry
 
 end
@@ -147,11 +147,11 @@ variable {α : Type*} [Preorder α]
 variable (a b c : α)
 
 example : ¬a < a := by
-  rw [lt_iff_le_not_le]
+  rw [lt_iff_le_not_ge]
   sorry
 
 example : a < b → b < c → a < c := by
-  simp only [lt_iff_le_not_le]
+  simp only [lt_iff_le_not_ge]
   sorry
 
 end

@@ -57,10 +57,10 @@ theorem sb_injective (hf : Injective f) : Injective (sbFun f g) := by
       simp [sbAux]
       exact ⟨x₁, hn, x₂eq.symm⟩
     sorry
-  push_neg  at xA
+  push_neg at xA
   sorry
 
-theorem sb_surjective (hf : Injective f) (hg : Injective g) : Surjective (sbFun f g) := by
+theorem sb_surjective (hg : Injective g) : Surjective (sbFun f g) := by
   set A := sbSet f g with A_def
   set h := sbFun f g with h_def
   intro y
@@ -75,15 +75,16 @@ theorem sb_surjective (hf : Injective f) (hg : Injective g) : Surjective (sbFun 
     have : x ∈ A := by
       rw [A_def, sbSet, mem_iUnion]
       exact ⟨n, xmem⟩
-    simp only [h_def, sbFun, if_pos this]
-    exact hg hx
+    rw [h_def, sbFun, if_pos this]
+    apply hg hx
+
   sorry
 
 end
 
 theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Injective f) (hg : Injective g) :
     ∃ h : α → β, Bijective h :=
-  ⟨sbFun f g, sb_injective f g hf, sb_surjective f g hf hg⟩
+  ⟨sbFun f g, sb_injective f g hf, sb_surjective f g hg⟩
 
 -- Auxiliary information
 section
