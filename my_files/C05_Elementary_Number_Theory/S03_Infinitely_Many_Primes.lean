@@ -289,13 +289,14 @@ theorem primes_mod_4_eq_3_infinite : ∀ n, ∃ p > n, Nat.Prime p ∧ p % 4 = 3
     have h3 := mem_of_dvd_prod_primes pp h2
     simp_all
   have : p ∣ 4 * ∏ i ∈ erase s 3, i := by
+    refine Nat.dvd_mul_left_of_dvd ?_ _
+    apply Finset.dvd_prod_of_mem
     simp_all
-    
-    done
-
   have : p ∣ 3 := by
     convert Nat.dvd_sub pdvd this
     simp_all
   have : p = 3 := by
-    sorry
+    refine Nat.Prime.eq_of_dvd_of_prime pp ?_ this
+    exact Nat.prime_three
+
   contradiction
