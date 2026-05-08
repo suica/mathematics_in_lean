@@ -269,16 +269,33 @@ theorem primes_mod_4_eq_3_infinite : ∀ n, ∃ p > n, Nat.Prime p ∧ p % 4 = 3
     exact ⟨p, pltn, pp, p4⟩
   rcases this with ⟨s, hs⟩
   have h₁ : ((4 * ∏ i ∈ erase s 3, i) + 3) % 4 = 3 := by
-    sorry
+    simp_all
   rcases exists_prime_factor_mod_4_eq_3 h₁ with ⟨p, pp, pdvd, p4eq⟩
   have ps : p ∈ s := by
-    sorry
+    simp_all
+    apply (hs p).mp
+    simp_all
   have pne3 : p ≠ 3 := by
-    sorry
+    simp_all
+    intro hp
+    simp_all [hp]
+    have h3dvdprod : 3 ∣ ∏ i ∈ s.erase 3, i := by omega
+    have h2: ∀ p ∈ s.erase 3, Nat.Prime p := by
+      intro p
+      simp_all
+      intros h h'
+      have := (hs p).mpr h'
+      exact this.left
+    have h3 := mem_of_dvd_prod_primes pp h2
+    simp_all
   have : p ∣ 4 * ∏ i ∈ erase s 3, i := by
-    sorry
+    simp_all
+    
+    done
+
   have : p ∣ 3 := by
-    sorry
+    convert Nat.dvd_sub pdvd this
+    simp_all
   have : p = 3 := by
     sorry
   contradiction
