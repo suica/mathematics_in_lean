@@ -205,7 +205,11 @@ theorem two_le_of_mod_4_eq_3 {n : ℕ} (h : n % 4 = 3) : 2 ≤ n := by
       norm_num at h
 
 theorem aux {m n : ℕ} (h₀ : m ∣ n) (h₁ : 2 ≤ m) (h₂ : m < n) : n / m ∣ n ∧ n / m < n := by
-  sorry
+  constructor
+  . apply Nat.div_dvd_of_dvd
+    exact h₀
+  apply Nat.div_lt_self
+  repeat linarith
 theorem exists_prime_factor_mod_4_eq_3 {n : Nat} (h : n % 4 = 3) :
     ∃ p : Nat, p.Prime ∧ p ∣ n ∧ p % 4 = 3 := by
   by_cases np : n.Prime
@@ -224,8 +228,28 @@ theorem exists_prime_factor_mod_4_eq_3 {n : Nat} (h : n % 4 = 3) :
     apply mod_4_eq_3_or_mod_4_eq_3
     rw [neq, h]
   rcases this with h1 | h1
-  . sorry
-  . sorry
+  . simp_all
+    have := ih m (by omega) h1
+    by_cases hm: Nat.Prime m
+    . use m
+    . have h2 := this hm
+      rcases h2 with ⟨pp, hprimep, hppdvdm, hppmod4⟩
+      use pp
+      simp_all
+      exact Nat.dvd_trans hppdvdm mdvdn
+  . simp_all
+    have := ih (n/m) (?_) h1
+    by_cases hk: Nat.Prime (n/m)
+    . use (n/m)
+      simp_all
+      exact Nat.div_dvd_of_dvd mdvdn
+    . simp_all
+      rcases this with ⟨pp, hprimepp, hmppdvdn, hppmod4⟩
+      use pp
+      simp_all
+      exact dvd_of_mul_left_dvd hmppdvdn
+    apply Nat.div_lt_self
+    repeat omega
 example (m n : ℕ) (s : Finset ℕ) (h : m ∈ erase s n) : m ≠ n ∧ m ∈ s := by
   rwa [mem_erase] at h
 
