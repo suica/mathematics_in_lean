@@ -22,7 +22,7 @@ example {m : ℕ} (h0 : m ≠ 0) (h1 : m ≠ 1) : 2 ≤ m := by
   push_neg at h
   revert h0 h1
   revert h m
-  decide
+  omega
 
 theorem exists_prime_factor {n : Nat} (h : 2 ≤ n) : ∃ p : Nat, p.Prime ∧ p ∣ n := by
   by_cases np : n.Prime
@@ -45,18 +45,28 @@ theorem exists_prime_factor {n : Nat} (h : 2 ≤ n) : ∃ p : Nat, p.Prime ∧ p
 theorem primes_infinite : ∀ n, ∃ p > n, Nat.Prime p := by
   intro n
   have : 2 ≤ Nat.factorial n + 1 := by
-    sorry
+    simp only [Nat.reduceLeDiff]
+    apply Nat.factorial_pos
   rcases exists_prime_factor this with ⟨p, pp, pdvd⟩
   refine ⟨p, ?_, pp⟩
   show p > n
   by_contra ple
   push_neg at ple
   have : p ∣ Nat.factorial n := by
-    sorry
+    apply Nat.dvd_factorial
+    apply Nat.pos_of_dvd_of_pos at pdvd
+    simp_all
+    exact ple
   have : p ∣ 1 := by
-    sorry
+    suffices h: p ∣ n.factorial + 1 - n.factorial by
+      simp_all
+    apply Nat.dvd_sub pdvd this
   show False
-  sorry
+  apply Nat.dvd_one.mp at this
+  simp_all [Nat.dvd_sub]
+  apply Nat.prime_one_false
+  contradiction
+
 open Finset
 
 section
@@ -224,4 +234,3 @@ theorem primes_mod_4_eq_3_infinite : ∀ n, ∃ p > n, Nat.Prime p ∧ p % 4 = 3
   have : p = 3 := by
     sorry
   contradiction
-
