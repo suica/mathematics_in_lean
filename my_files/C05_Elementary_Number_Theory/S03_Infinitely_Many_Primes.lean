@@ -279,7 +279,10 @@ theorem primes_mod_4_eq_3_infinite : ∀ n, ∃ p > n, Nat.Prime p ∧ p % 4 = 3
     simp_all
     intro hp
     simp_all [hp]
-    have h3dvdprod : 3 ∣ ∏ i ∈ s.erase 3, i := by omega
+    have h3dvdprod : 3 ∣ ∏ i ∈ s.erase 3, i := by
+      have: 3 ∣ 4 * ∏ i ∈ s.erase 3, i ↔ 3 ∣ 4 ∨ 3 ∣ ∏ i ∈ s.erase 3, i := Nat.Prime.dvd_mul pp
+      simp_all
+
     have h2: ∀ p ∈ s.erase 3, Nat.Prime p := by
       intro p
       simp_all
