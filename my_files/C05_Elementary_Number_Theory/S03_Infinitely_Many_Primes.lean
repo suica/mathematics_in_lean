@@ -151,15 +151,23 @@ theorem primes_infinite' : ∀ s : Finset Nat, ∃ p, Nat.Prime p ∧ p ∉ s :=
     simp [s'_def]
     apply h
   have : 2 ≤ (∏ i ∈ s', i) + 1 := by
-    sorry
+    simp [s'_def]
+    refine one_le_prod' ?_
+    simp_all
+    rintro i hi hpi
+    exact Nat.Prime.one_le hpi
   rcases exists_prime_factor this with ⟨p, pp, pdvd⟩
   have : p ∣ ∏ i ∈ s', i := by
-    sorry
+    simp_all [s'_def]
+    apply Finset.dvd_prod_of_mem
+    simp_all
   have : p ∣ 1 := by
     convert Nat.dvd_sub pdvd this
     simp
   show False
-  sorry
+  have := Nat.dvd_sub pdvd this
+  simp_all [Nat.prime_def_lt]
+
 theorem bounded_of_ex_finset (Q : ℕ → Prop) :
     (∃ s : Finset ℕ, ∀ k, Q k → k ∈ s) → ∃ n, ∀ k, Q k → k < n := by
   rintro ⟨s, hs⟩
