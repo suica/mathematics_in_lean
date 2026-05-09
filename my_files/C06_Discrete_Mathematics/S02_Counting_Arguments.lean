@@ -91,13 +91,22 @@ example (n : ℕ) : #(triangle n) = (n + 1) * n / 2 := by
   let turn (p : ℕ × ℕ) : ℕ × ℕ := (n - 1 - p.1, n - p.2)
   calc 2 * #(triangle n)
       = #(triangle n) + #(triangle n) := by
-          sorry
+          linarith
     _ = #(triangle n) + #(triangle n |>.image turn) := by
-          sorry
+          have hinj: Set.InjOn turn (triangle n) := by
+            intros x1 h1 x2 h2 hturn
+            simp_all [turn, triangle]
+            ext
+            omega
+            omega
+          simp_all [card_image_of_injOn]
     _ = #(range n ×ˢ range (n + 1)) := by
+          simp_all
           sorry
     _ = (n + 1) * n := by
-          sorry
+          simp_all
+          ring_nf
+
 
 def triangle' (n : ℕ) : Finset (ℕ × ℕ) := {p ∈ range n ×ˢ range n | p.1 ≤ p.2}
 
