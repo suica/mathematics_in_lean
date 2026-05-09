@@ -131,7 +131,29 @@ example (n : ℕ) : #(triangle n) = (n + 1) * n / 2 := by
 
 def triangle' (n : ℕ) : Finset (ℕ × ℕ) := {p ∈ range n ×ˢ range n | p.1 ≤ p.2}
 
-example (n : ℕ) : #(triangle' n) = #(triangle n) := by sorry
+example (n : ℕ) : #(triangle' n) = #(triangle n) := by
+  let f (p : ℕ × ℕ) : ℕ × ℕ := (p.1, p.2 + 1)
+  have : image f (triangle' n) = triangle n := by
+    ext x
+    constructor
+    . rintro h
+      simp_all [triangle, triangle', f]
+      rcases h with ⟨p1, p2, ⟨hp, ⟨h1, h2⟩⟩⟩
+      omega
+    intro h
+    simp_all [triangle, triangle', f]
+    use x.1, x.2 - 1
+    constructor
+    omega
+    ext
+    omega
+    omega
+  rw [symm this]
+  symm
+  apply card_image_of_injective
+  rintro ⟨a1, a2⟩ ⟨b1, b2⟩ hf
+  simp_all
+  constructor <;> (simp [f] at hf; omega)
 
 section
 open Classical
