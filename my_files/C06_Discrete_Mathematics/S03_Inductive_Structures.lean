@@ -109,14 +109,29 @@ theorem size_le : ∀ t : BinTree, size t ≤ 2^depth t - 1
           have : 0 < 2 ^ max l.depth r.depth := by simp
           omega
 
-theorem depth_le_size : ∀ t : BinTree, depth t ≤ size t := by sorry
+theorem depth_le_size : ∀ t : BinTree, depth t ≤ size t := by
+  intro t
+  induction t with
+  | empty =>
+    simp_all [size, depth]
+  | node l r hl hr =>
+    simp_all [size, depth]
+    omega
 
-def flip : BinTree → BinTree := sorry
+
+def flip : BinTree → BinTree
+  | empty => empty
+  | node l r => node (flip r) (flip l)
 
 example: flip  (node (node empty (node empty empty)) (node empty empty)) =
-    node (node empty empty) (node (node empty empty) empty) := sorry
+    node (node empty empty) (node (node empty empty) empty) := by simp_all [flip]
 
-theorem size_flip : ∀ t, size (flip t) = size t := by sorry
+theorem size_flip : ∀ t, size (flip t) = size t := by
+  intro t
+  induction t with
+  | empty => simp_all [size, flip]
+  | node l r hl hr=>
+    simp_all [size, flip, add_comm]
 end BinTree
 
 inductive PropForm : Type where
