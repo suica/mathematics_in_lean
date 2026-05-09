@@ -179,7 +179,16 @@ def subst : PropForm → ℕ → PropForm → PropForm
   | impl A B, m, C => impl (A.subst m C) (B.subst m C)
 
 theorem subst_eq_of_not_mem_vars :
-    ∀ (A : PropForm) (n : ℕ) (C : PropForm), n ∉ A.vars → A.subst n C = A := sorry
+    ∀ (A : PropForm) (n : ℕ) (C : PropForm), n ∉ A.vars → A.subst n C = A := by
+    intro A n C h
+    induction A with
+    | fls =>
+      simp [subst]
+    | var x =>
+      simp_all [h, subst, vars]
+      exact fun a => False.elim (h (id (Eq.symm a)))
+    | _ =>
+      simp_all [subst ,vars]
 
 theorem subst_eval_eq : ∀ (A : PropForm) (n : ℕ) (C : PropForm) (v : ℕ → Bool),
   (A.subst n C).eval v = A.eval (fun m => if m = n then C.eval v else v m) := sorry
