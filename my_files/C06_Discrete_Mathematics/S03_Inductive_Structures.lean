@@ -191,6 +191,17 @@ theorem subst_eq_of_not_mem_vars :
       simp_all [subst ,vars]
 
 theorem subst_eval_eq : ∀ (A : PropForm) (n : ℕ) (C : PropForm) (v : ℕ → Bool),
-  (A.subst n C).eval v = A.eval (fun m => if m = n then C.eval v else v m) := sorry
+  (A.subst n C).eval v = A.eval (fun m => if m = n then C.eval v else v m) := by
+    intro A n C v
+    induction A with
+    | fls =>
+      simp [subst, eval]
+    | var x =>
+      simp_all [subst, vars, eval]
+      by_cases h: x = n
+      . simp_all
+      . simp_all [eval]
+    | _ =>
+      simp_all [subst ,vars, eval]
 
 end PropForm
