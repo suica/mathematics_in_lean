@@ -181,8 +181,23 @@ example {n : ℕ} (A : Finset ℕ)
     ∃ m ∈ A, ∃ k ∈ A, Nat.Coprime m k := by
   have : ∃ t ∈ range n, 1 < #({u ∈ A | u / 2 = t}) := by
     apply exists_lt_card_fiber_of_mul_lt_card_of_maps_to
-    · sorry
-    · sorry
+    · intro a ha
+      simp only [mem_range]
+      suffices a < 2 * n by
+        exact Nat.div_lt_of_lt_mul this
+      exact List.mem_range.mp (hA' ha)
+    · simp_all
   rcases this with ⟨t, ht, ht'⟩
   simp only [one_lt_card, mem_filter] at ht'
-  sorry
+  rcases ht' with ⟨a, ⟨ha, ha2t⟩, b, ⟨hb, hbt⟩, haneqb⟩
+  have : a = b+1 ∨ b = a+1 := by
+    omega
+  rcases this with h | h
+  . use a
+    simp_all
+    use b
+    simp_all
+  . use a
+    simp_all
+    use b
+    simp_all
