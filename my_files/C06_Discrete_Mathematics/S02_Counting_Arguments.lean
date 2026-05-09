@@ -101,8 +101,29 @@ example (n : ℕ) : #(triangle n) = (n + 1) * n / 2 := by
             omega
           simp_all [card_image_of_injOn]
     _ = #(range n ×ˢ range (n + 1)) := by
-          simp_all
-          sorry
+          have hdis: Disjoint (triangle n) (image turn (triangle n)) := by
+            rw [disjoint_iff_ne]
+            rintro ⟨a1, a2⟩ ha ⟨b1, b2⟩ hb
+            simp_all [triangle, turn]
+            omega
+          have := card_union_of_disjoint hdis
+          rw [<- this]
+          have heq: triangle n ∪ image turn (triangle n) = range (n) ×ˢ range (n+1) := by
+            ext x
+            rcases x with ⟨p1, p2⟩
+            simp_all [triangle, turn]
+            constructor
+            . rintro (h | h)
+              omega
+              omega
+            rcases Nat.lt_or_ge p1 p2 with h | h
+            . omega
+            . intro h'
+              right
+              use n-1-p1, n - p2
+              omega
+          rw [heq]
+
     _ = (n + 1) * n := by
           simp_all
           ring_nf
